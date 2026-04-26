@@ -1,0 +1,7 @@
+##
+# @see https://rust-lang.github.io/rustup/overrides.html#the-toolchain-file
+##
+
+[toolchain]
+channel = "1.95.0"
+components = ["rust-analyzer"]

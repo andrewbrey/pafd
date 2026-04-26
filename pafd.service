@@ -1,0 +1,44 @@
+[Unit]
+Description=pafd playback server
+After=default.target sound.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.cargo/bin/pafd server --bind 0.0.0.0:8421
+Environment=RUST_LOG=info
+Restart=on-failure
+RestartSec=2s
+# EnvironmentFile=%h/.config/pafd/env   # PAFD_TOKEN=... (chmod 600)
+
+# --- Hardening ---
+# Privilege & capability surface
+NoNewPrivileges=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+# Filesystem
+ProtectSystem=strict
+ReadWritePaths=%h/.cache/pafd
+PrivateTmp=true
+ProtectProc=invisible
+ProcSubset=pid
+UMask=0077
+
+# Kernel & host
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+
+# Process & syscall surface
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+[Install]
+WantedBy=default.target
